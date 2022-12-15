@@ -1,6 +1,6 @@
 {
-  "name": "type-schema",
-  "version": "1.0.1",
+  "name": "@warriortrading/type-schema",
+  "version": "1.0.3",
   "description": "Define JSON Schemas using TypeScript classes",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
