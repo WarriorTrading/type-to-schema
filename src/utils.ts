@@ -29,7 +29,7 @@ export const getEnumArray = (enumCandidate: any) => {
 };
 
 export const getType = (type?: any) => {
-  if (_.includes([Number, String, Boolean, Array, Object], type)) {
+  if (_.includes([Number, String, Boolean, Array, Object, Date], type)) {
     return _.lowerCase(type.name);
   }
   if (type && type.prototype) {
