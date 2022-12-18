@@ -29,6 +29,8 @@ export interface IArrayPropertyOptions {
 export interface IObjectOptions {
   $async?: boolean;
   additionalProperties?: boolean;
+  isArray?: boolean;
+  items?: any;
 }
 
 export interface IProperty {

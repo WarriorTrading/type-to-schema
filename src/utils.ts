@@ -2,7 +2,13 @@ import * as _ from 'lodash';
 import 'reflect-metadata';
 
 import { PropertyTypes, MetadataKeys } from './enums';
-import { IItemOptions, IObjectOptions, IArrayPropertyOptions, IProperyOptions, IProperty } from './typings';
+import {
+  IItemOptions,
+  IObjectOptions,
+  IArrayPropertyOptions,
+  IProperyOptions,
+  IProperty,
+} from './typings';
 import { InvalidPropertyError, NoSchemaPropertiesError, InvalidTypeError, EnumEmptyError } from './errors';
 
 export const getEnumArray = (enumCandidate: any) => {
@@ -88,7 +94,38 @@ export const getObjectOptions = <T>(target: { new(): T }): IObjectOptions => {
 };
 
 export function getJSONSchema<T>(schemaClass: { new(): T }) {
-  const [properties, options] = [getPropertyKeys(schemaClass), getObjectOptions(schemaClass)];
+  const [properties, options] = [
+    getPropertyKeys(schemaClass),
+    getObjectOptions(schemaClass),
+  ];
+
+  let arrayPropertyToAdd: any = {};
+  if (options.isArray) {
+    if (options.items) {
+      const type = getType(options.items);
+      if (type === PropertyTypes.SCHEMA) {
+        arrayPropertyToAdd = {
+          ...arrayPropertyToAdd,
+          type: 'array',
+          items: getJSONSchema(options.items),
+        };
+      } else {
+        arrayPropertyToAdd = {
+          ...arrayPropertyToAdd,
+          type: 'array',
+          items: {
+            type,
+          },
+        };
+      }
+    } else {
+      arrayPropertyToAdd = {
+        ...arrayPropertyToAdd,
+        type: 'array',
+        items: {},
+      };
+    }
+  }
 
   const props = _.reduce(
     properties,
@@ -181,7 +218,8 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
     } as { required?: string[], type: PropertyTypes.OBJECT, properties: object },
   );
   return {
-    ...options,
-    ...props,
+    ..._.omit(options, ['isArray', 'items']),
+    ...(arrayPropertyToAdd.type === 'array' ? _.omit(props, ['properties']) : props),
+    ...arrayPropertyToAdd,
   };
 }

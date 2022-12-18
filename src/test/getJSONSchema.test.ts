@@ -427,4 +427,29 @@ describe('utils', () => {
       },
     });
   });
+
+  it('Should array with item string array type', () => {
+    @objectOptions({ isArray: true, items: String })
+    class Schema {}
+
+    const schema = getJSONSchema(Schema);
+    expect(schema).to.eql({
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    });
+  });
+
+  it('Should array with item no type', () => {
+    @objectOptions({ isArray: true })
+    class Schema {}
+
+    const schema = getJSONSchema(Schema);
+    expect(schema).to.eql({
+      type: 'array',
+      items: {
+      },
+    });
+  });
 });

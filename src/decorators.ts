@@ -3,7 +3,13 @@ import 'reflect-metadata';
 
 import { IProperyOptions, IArrayPropertyOptions, IObjectOptions, IRawPropertyOptions } from './typings';
 import { PropertyTypes, MetadataKeys } from './enums';
-import { checkOptions, addPropertyKey, getType, setObjectOptions, setPropertyOptions, getEnumArray } from './utils';
+import { checkOptions,
+  addPropertyKey,
+  getType,
+  setObjectOptions,
+  setPropertyOptions,
+  getEnumArray,
+} from './utils';
 import { NoItemTypeProvidedError, PropertyIsNotArrayError, PropertyHasInvalidTypeError } from './errors';
 
 export const property = (options?: IProperyOptions) => (target: any, key: string) => {
