@@ -12,9 +12,10 @@ export const property = (options?: IProperyOptions) => (target: any, key: string
   const typeName = getType(type);
   const valid = _.includes(_.omit(_.values(PropertyTypes), PropertyTypes.ARRAY), typeName);
   if (!valid) {
-    throw new PropertyHasInvalidTypeError(target, key, typeName);
+    if (typeof typeName === 'string') {
+      throw new PropertyHasInvalidTypeError(target, key,typeName);
+    }
   }
-
   if (options && options.enum) {
     options.enum = getEnumArray(options.enum);
   }
@@ -40,7 +41,7 @@ export const arrayProperty = (options: IArrayPropertyOptions) => (target: any, k
     throw new PropertyIsNotArrayError(target, key);
   }
 
-  if (!options || !options.items) {
+  if (!options) {
     throw new NoItemTypeProvidedError(target, key);
   }
 

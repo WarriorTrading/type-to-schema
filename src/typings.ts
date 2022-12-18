@@ -1,4 +1,4 @@
-export type TJSONSchemaFormat = 'date-time' | 'email' | 'hostname' | 'ipv4' | 'ipv6' | 'uri';
+export type TJSONSchemaFormat = 'date-time' | 'email' | 'hostname' | 'ipv4' | 'ipv6' | 'uri' | 'buffer';
 
 export interface IItemOptions {
   enum?: { [key: number]: string } | (string | number | null)[];
@@ -20,7 +20,7 @@ export interface IRawPropertyOptions {
 
 export interface IArrayPropertyOptions {
   required?: boolean;
-  items: any;
+  items?: any;
   minItems?: number;
   maxItems?: number;
   itemOptions?: IItemOptions;

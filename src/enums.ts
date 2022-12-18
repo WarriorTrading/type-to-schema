@@ -1,7 +1,7 @@
 export enum PropertyTypes {
   NUMBER = 'number',
   STRING = 'string',
-  DATE = 'date',
+  UNKNOWN = 'unknown',
   BOOLEAN = 'boolean',
   OBJECT = 'object',
   ARRAY = 'array',

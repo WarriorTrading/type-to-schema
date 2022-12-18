@@ -29,7 +29,8 @@ export const getEnumArray = (enumCandidate: any) => {
 };
 
 export const getType = (type?: any) => {
-  if (_.includes([Number, String, Boolean, Array, Object, Date], type)) {
+  if (type === 'unknown') return {};
+  if (_.includes([Number, String, Boolean, Array, Object], type)) {
     return _.lowerCase(type.name);
   }
   if (type && type.prototype) {
@@ -89,10 +90,6 @@ export const getObjectOptions = <T>(target: { new(): T }): IObjectOptions => {
 export function getJSONSchema<T>(schemaClass: { new(): T }) {
   const [properties, options] = [getPropertyKeys(schemaClass), getObjectOptions(schemaClass)];
 
-  if (_.isEmpty(properties)) {
-    throw new NoSchemaPropertiesError();
-  }
-
   const props = _.reduce(
     properties,
     (state, propertyKey) => {
@@ -108,18 +105,31 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
         };
       } else if (property.array) {
         const options = property.options as IArrayPropertyOptions;
-
-        const type = getType(options.items);
-
         propertyToAdd = {
           ..._.omit(options, ['required', 'items', 'itemOptions']),
         };
-        if (type === PropertyTypes.SCHEMA) {
-          propertyToAdd = {
-            ...propertyToAdd,
-            type: 'array',
-            items: getJSONSchema(options.items),
-          };
+        if (options.items) {
+          const type = getType(options.items);
+          if (type === PropertyTypes.SCHEMA) {
+            propertyToAdd = {
+              ...propertyToAdd,
+              type: 'array',
+              items: getJSONSchema(options.items),
+            };
+          } else {
+            let itemOptions = {};
+            if (options && options.itemOptions) {
+              itemOptions = options.itemOptions;
+            }
+            propertyToAdd = {
+              ...propertyToAdd,
+              type: 'array',
+              items: {
+                ...itemOptions,
+                type,
+              },
+            };
+          }
         } else {
           let itemOptions = {};
           if (options && options.itemOptions) {
@@ -130,7 +140,6 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
             type: 'array',
             items: {
               ...itemOptions,
-              type,
             },
           };
         }
@@ -171,7 +180,6 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
       properties: {},
     } as { required?: string[], type: PropertyTypes.OBJECT, properties: object },
   );
-
   return {
     ...options,
     ...props,

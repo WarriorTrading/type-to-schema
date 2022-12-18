@@ -88,12 +88,7 @@ describe('utils', () => {
       @objectOptions({ $async: true, additionalProperties: true })
       class Schema {
       }
-
-      try {
-        getJSONSchema(Schema);
-      } catch (err) {
-        expect(err.message).to.equal('No schema properties found on class.');
-      }
+      getJSONSchema(Schema);
     });
 
     it('Should get object with its options set', () => {
@@ -392,6 +387,44 @@ describe('utils', () => {
         },
         required: ['subs'],
       });
+    });
+  });
+
+  it('Should get key with no type', () => {
+    class Schema {
+      @property({ required: true })
+      data!: unknown;
+    }
+
+    const schema = getJSONSchema(Schema);
+
+    expect(schema).to.eql({
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+        },
+      },
+    });
+  });
+
+  it('Should get array with item no type', () => {
+    class Schema {
+      @arrayProperty({ required: true })
+      data!: unknown[];
+    }
+
+    const schema = getJSONSchema(Schema);
+    expect(schema).to.eql({
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+          },
+        },
+      },
     });
   });
 });
